@@ -1,5 +1,5 @@
 // import { AddCircle } from "@mui/icons-material";
-import AddressInput from "../Components/Input";
+import AddressInput from "../components/Input";
 import "font-awesome/css/font-awesome.min.css";
 
 export const renderAddressBox = (waypoints, updateWaypoint, addWaypoint) => (
