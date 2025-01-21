@@ -3,7 +3,7 @@ import download from "./Sidebar/download.svg";
 import gift from "./Sidebar/gift.svg";
 import grid from "./Sidebar/grid.png";
 import map from "./Sidebar/map.svg";
-import Sidebar from "./Sidebar/sidebar.svg";
+// import Sidebar from "./Sidebar/sidebar.svg";
 import sliders from "./Sidebar/sliders.svg";
 import unlock from "./Sidebar/unlock.svg";
 
@@ -13,7 +13,7 @@ const images = {
   gift: gift,
   grid: grid,
   map: map,
-  sidebar: Sidebar,
+  // sidebar: Sidebar,
   sliders: sliders,
   unlock: unlock,
 };

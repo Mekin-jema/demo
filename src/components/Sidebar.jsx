@@ -21,7 +21,7 @@ const Sidebar = ({ active, setActive, open, setOpen }) => {
     { icon: images.map, label: "Map" },
     { icon: images.unlock, label: "API Keys" },
     { icon: images.sliders, label: "Account Setting" },
-    { icon: images.sidebar, label: "Billing" },
+    { icon: "", label: "Billing" },
     { icon: images.gift, label: "Premium" },
   ];
 
