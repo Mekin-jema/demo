@@ -41,13 +41,13 @@ export default function AddressInput({
   };
 
   return (
-    <div className="address-input-container relative w-full max-w-md mx-auto p-4 bg-white rounded-xl shadow-lg">
+    <div className="  p-2  rounded-xl w-full shadow-lg">
       <input
         type="text"
         value={inputValue}
         onChange={handleChange}
         placeholder={placeholder}
-        className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full py-1 pl-2 pr-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-800"
       />
 
       {/* Suggestions list */}

@@ -82,7 +82,7 @@ const Sidebar = ({ active, setActive, open, setOpen }) => {
             <div className="flex items-center justify-between   ">
               <img
                 className="w-[80px] h-[71.6px] "
-                src={images.amba1}
+                src={images.logo}
                 alt="Amba"
               />
               <div>

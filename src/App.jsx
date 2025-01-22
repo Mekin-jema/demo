@@ -3,9 +3,9 @@ import "./styles/App.scss";
 
 const App = () => {
   return (
-    <>
+    <div className="bg-green-400">
       <AmbaBoard />
-    </>
+    </div>
   );
 };
 

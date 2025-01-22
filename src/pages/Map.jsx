@@ -42,6 +42,7 @@ const Map = () => {
   const [map, setMap] = useState(null);
   const [route, setRoute] = useState(null);
   const [toggle, setToggle] = useState(true);
+  const [close, setClose] = useState(false);
 
   const [waypoints, setWaypoints] = useState([
     { placeName: "", longitude: null, latitude: null },
@@ -69,7 +70,7 @@ const Map = () => {
           container: mapContainer.current, // Container for the map
           style: styles,
           center: [header.centerLon, header.centerLat], // Center from PMTiles metadata
-          zoom: 10, // Initial zoom level
+          zoom: 14, // Initial zoom level
         });
 
         // Add navigation controls (zoom in/out)
@@ -147,12 +148,6 @@ const Map = () => {
 
           if (routeInfo?.routes?.length > 0) {
             setRoute(routeInfo.routes[0]);
-            // // Start speaking the instructions
-            // routeInfo.routes[0].legs[0].steps.forEach((step, index) => {
-            //   setTimeout(() => {
-            //     speak(step.maneuver.instruction); // Speak each step's instruction
-            //   }, index * 10000000); // Adjust the timeout to allow time for the user to follow the steps
-            // });
           }
 
           if (shortestRoute?.routes?.length > 0) {
@@ -224,45 +219,55 @@ const Map = () => {
 
   return (
     <div
-      style={{ position: "relative", width: "100%", height: "100vh" }}
+      style={{ position: "relative", width: "100%", height: "100%" }}
       className="flex"
     >
-      <ToastContainer position="top-center" autoClose={3000} />
-      {renderAddressBox(waypoints, updateWaypoint, addWaypoint)}
+      <ToastContainer position="top-center" autoClose={10000} />
+      {!close && renderAddressBox(waypoints, updateWaypoint, addWaypoint)}
+      {/* <span
+        onClick={() => setClose(!close)}
+        className="bg-red-600 text-white absolute  top-10 left-[800px] z-10 cursor-pointer   "
+      >
+        X
+      </span> */}
       <div
         ref={mapContainer}
         style={{ width: "70%", height: "100%" }}
         className="flex-1"
       />
-      <button
-        onClick={() => setToggle(!toggle)}
-        className={`absolute ${
-          toggle ? "top-6 right-[390px]" : "top-6 right-[30px]"
-        } bg-green-800 rounded-sm text-white p-3 z-40`}
-      >
+      <div className="relative">
         {toggle ? (
-          <i className="pi pi-chevron-right cursor-pointer text-white"></i>
-        ) : (
-          <i className="pi pi-chevron-left cursor-pointer text-white"></i>
-        )}
-      </button>
-      {toggle && (
-        <div className="direction-detail">
-          <div style={{ padding: 16 }} className="w-full">
-            <img className="w-full h-[200px]" alt="Logo" src={Logo} />
-            {renderDirectionDetail(
-              route,
-              OriginStep,
-
-              DIRECTION_ARROWS,
-              DestinationStep,
-              map,
-              waypoints,
-              maplibregl
-            )}
+          <div className="direction-detail fixed">
+            <div className="w-full p-4">
+              <button
+                onClick={() => setToggle(false)}
+                className="absolute top-6 left-1 bg-green-800  text-white p-3 z-40 rounded-md"
+                aria-label="Close details"
+              >
+                <i className="pi pi-chevron-right cursor-pointer text-white"></i>
+              </button>
+              <img className="w-full h-[200px]" alt="Logo" src={Logo} />
+              {renderDirectionDetail(
+                route,
+                OriginStep,
+                DIRECTION_ARROWS,
+                DestinationStep,
+                map,
+                waypoints,
+                maplibregl
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        ) : (
+          <button
+            onClick={() => setToggle(true)}
+            className="bg-green-800 rounded-sm text-white p-3 z-40 fixed top-6 right-0 rounded-md "
+            aria-label="Open details"
+          >
+            <i className="pi pi-chevron-left cursor-pointer text-white"></i>
+          </button>
+        )}
+      </div>
     </div>
   );
 };

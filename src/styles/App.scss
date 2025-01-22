@@ -33,10 +33,12 @@
 }
 
 .direction-detail {
-  position: relative;
-  display: flex;
-  height: 100%;
-  width: 30%;
+  // display: flex;
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 99%;
+  width: 20%;
   overflow: hidden;
   overflow-y: auto;
   background-color: #fff;

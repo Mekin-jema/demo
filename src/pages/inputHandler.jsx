@@ -3,9 +3,9 @@ import AddressInput from "../components/Input";
 import "font-awesome/css/font-awesome.min.css";
 
 export const renderAddressBox = (waypoints, updateWaypoint, addWaypoint) => (
-  <div className="absolute top-6 left-4 z-10 bg-white p-6 rounded-2xl shadow-lg flex flex-col items-center font-sans w-[90%] max-w-[500px]">
+  <div className="absolute top-6 left-[100px] z-10 bg-white p-3 rounded-2xl shadow-lg flex flex-col items-center font-sans w-[30%] max-w-[400px]">
     {waypoints.map((waypoint, index) => (
-      <div key={index} className="flex items-center gap-3 w-full">
+      <div key={index} className="flex items-center gap-1 w-full">
         <div className="relative flex flex-col items-center">
           <span
             className={`${
@@ -13,7 +13,7 @@ export const renderAddressBox = (waypoints, updateWaypoint, addWaypoint) => (
                 ? "bg-[#00c853]" // Origin color (Green)
                 : index === waypoints.length - 1
                 ? "bg-[#ff3d17]" // Destination color (Red)
-                : "bg-[#f4a261]" // Waypoint color (Yellow-Orange)
+                : "bg-gray-400" // Waypoint color (Yellow-Orange)
             } rounded-full w-8 h-8 flex items-center justify-center text-white font-semibold`}
           >
             {index + 1}
@@ -27,7 +27,9 @@ export const renderAddressBox = (waypoints, updateWaypoint, addWaypoint) => (
 
         <AddressInput
           setAddress={(address) => updateWaypoint(index, address)}
-          placeholder={`Waypoint ${index + 1}`}
+          placeholder={`${
+            index === 0 ? "Starting Address" : `Destination Adress ${index}`
+          }`}
           className="w-full bg-gray-100 p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
@@ -39,7 +41,7 @@ export const renderAddressBox = (waypoints, updateWaypoint, addWaypoint) => (
         waypoints[0].lattitude !== null && (
           <div className="flex gap-3">
             <button
-              className="bg-[#00c853] text-white text-[18px] rounded-full p-2 flex items-center justify-center hover:bg-[#007b3d] focus:outline-none focus:ring-2 focus:ring-[#00c853] transition-all duration"
+              className="bg-[#00c853] text-white text-[18px] rounded-full p-2 flex items-center  justify-center hover:bg-[#007b3d] focus:outline-none focus:ring-2 focus:ring-[#00c853] transition-all duration"
               onClick={addWaypoint}
             >
               <i className="fa fa-plus"></i>
