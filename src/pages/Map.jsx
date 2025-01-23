@@ -33,6 +33,14 @@ import { addRouteLayer } from "../utils/MapUtils"; // Utility for adding route l
 // for toastin purpouse
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+//
+import {
+  FaUtensils,
+  FaHotel,
+  FaShoppingCart,
+  FaTree,
+  FaGasPump,
+} from "react-icons/fa";
 
 const Map = () => {
   // Refs for map container and instance
@@ -56,30 +64,35 @@ const Map = () => {
     {
       name: "Restaurants",
       tag: "amenity=restaurant",
+      icons: <FaUtensils />,
       icon: "restaurant",
       iconUrl: "/icons/restaurant.png",
     },
     {
       name: "Hotels",
       tag: "tourism=hotel",
+      icons: <FaHotel />,
       icon: "hotel",
       iconUrl: "/icons/hotel.png",
     },
     {
       name: "Grocery Stores",
       tag: "shop=supermarket",
+      icons: <FaShoppingCart />,
       icon: "supermarket",
       iconUrl: "/icons/supermarket.png",
     },
     {
       name: "Parks",
       tag: "leisure=park",
+      icons: <FaTree />,
       icon: "park",
       iconUrl: "/icons/park.png",
     },
     {
       name: "Fuel Stations",
       tag: "amenity=fuel",
+      icons: <FaGasPump />,
       icon: "fuel",
       iconUrl: "/icons/fuel.png",
     },
@@ -97,7 +110,7 @@ const Map = () => {
     pmtiles
       .getHeader()
       .then((header) => {
-        console.log("Header information:", header); // Log header information
+        // console.log("Header information:", header); // Log header information
         protocol.add(pmtiles); // Register PMTiles with protocol
 
         // Create and configure the map instance
@@ -144,24 +157,41 @@ const Map = () => {
           .setLngLat([38.7626, 9.0404]) // Set initial coordinates
           .addTo(mapInstance.current); // Add marker to the map
         // Listen for the "styleimagemissing" event
-        mapInstance.current.on("styleimagemissing", (e) => {
-          const missingImageId = e.id;
-          const category = categories.find(
-            (cat) => cat.icon === missingImageId
-          );
-          if (category) {
-            const img = new Image();
-            img.src = category.iconUrl;
-            img.onload = () => {
-              mapInstance.current.addImage(missingImageId, img);
-            };
-          }
+
+        // Listen for the "styleimagemissing" event to handle missing icons
+        // mapInstance.current.on("styleimagemissing", (e) => {
+        //   console.log(e);
+        //   const missingImageId = e.id;
+        //   const category = categories.find(
+        //     (cat) => cat.icon === missingImageId
+        //   );
+
+        //   // If category found and image is not already added
+        //   if (category && !mapInstance.current.hasImage(missingImageId)) {
+        //     const img = new Image();
+        //     img.src = category.iconUrl;
+        //     img.onload = () => {
+        //       // Add the image to the map once it's loaded
+        //       mapInstance.current.addImage(missingImageId, img);
+        //     };
+        //   }
+        // });
+
+        // // Load icons for POIs
+        categories.forEach((category) => {
+          // Check if the icon is already in the map
+
+          const img = new Image();
+          img.src = category.iconUrl;
+          img.onload = () => {
+            // Add the image to the map once it's loaded
+            mapInstance.current.addImage(category.icon, img);
+          };
         });
 
-        setMap(mapInstance.current);
         function onDragEnd() {
           const lngLat = marker.getLngLat();
-          console.log(`Longitude: ${lngLat.lng}, Latitude: ${lngLat.lat}`); // Log coordinates
+          // console.log(`Longitude: ${lngLat.lng}, Latitude: ${lngLat.lat}`); // Log coordinates
           // You can update other UI elements here
         }
 
@@ -357,6 +387,7 @@ const Map = () => {
     try {
       const response = await fetch(url);
       const data = await response.json();
+      console.log(data);
       const pois = data.elements.map((element) => ({
         id: element.id,
         name: element.tags.name || "Unknown",
@@ -383,19 +414,20 @@ const Map = () => {
 
   return (
     <div className="relative w-full h-full flex flex-col">
-      <div className="flex justify-center items-center p-2 bg-gray-100 border-b border-gray-300">
+      <div className="absolute top-0 right-0 p-2 mr-[300px] border-b border-gray-300 bg-transparent z-10 flex">
         {categories.map((category) => (
           <button
             key={category.name}
             onClick={() => handleCategoryClick(category)}
-            className={`mx-1 px-3 py-2 rounded ${
+            className={`flex items-center mx-1 px-3 py-2 rounded border space-x-2 ${
               activeCategory === category.name
-                ? "bg-blue-600 text-white"
-                : "bg-gray-300 text-black"
+                ? "bg-gray-600 text-white"
+                : "bg-white text-black"
             }`}
             disabled={loading}
           >
-            {category.name}
+            <span>{category.icons}</span>
+            <span>{category.name}</span>
           </button>
         ))}
       </div>

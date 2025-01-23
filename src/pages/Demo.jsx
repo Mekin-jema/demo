@@ -56,7 +56,7 @@ const MapComponent = () => {
     mapInstance.on("styleimagemissing", (e) => {
       const missingImageId = e.id;
       const category = categories.find((cat) => cat.icon === missingImageId);
-      if (category) {
+      if (category && !mapInstance.hasImage(missingImageId)) {
         const img = new Image();
         img.src = category.iconUrl;
         img.onload = () => {
