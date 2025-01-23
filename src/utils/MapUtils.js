@@ -1,19 +1,18 @@
 import maplibregl from "maplibre-gl";
-
 export const addRouteLayer = (
   map,
   color = "red",
-
   geometry,
   name,
-  thickness
-  // maplibregl
+  thickness,
+  setWaypoints,
+  waypoints
 ) => {
-  // Remove the previous route layer before adding a new one
+  // Remove existing route layer if present
   if (map.getLayer(name)) map.removeLayer(name);
   if (map.getSource(name)) map.removeSource(name);
 
-  // Add the normal route layer (default path)
+  // Add new route layer
   map.addSource(name, {
     type: "geojson",
     data: {
@@ -39,39 +38,48 @@ export const addRouteLayer = (
     },
   });
 
+  // Add markers for start and end points of the route
   const markersData = [
-    {
-      color: "green",
-      coordinates: geometry[0],
-    },
-    {
-      color: "red",
-      coordinates: geometry[geometry.length - 1],
-    },
+    { color: "green", coordinates: geometry[0] }, // Start point
+    { color: "red", coordinates: geometry[geometry.length - 1] }, // End point
   ];
 
-  markersData.forEach((markerData) => {
-    new maplibregl.Marker({ color: markerData.color })
+  markersData.forEach((markerData, index) => {
+    const marker = new maplibregl.Marker({
+      color: markerData.color,
+      draggable: true,
+    })
       .setLngLat(markerData.coordinates)
       .addTo(map);
+
+    // Handle dragging marker and updating route
+    marker.on("dragend", () => {
+      const lngLat = marker.getLngLat();
+      // console.log(lngLat);
+      // console.log(index);
+      const updatedWaypoints = [...waypoints];
+      updatedWaypoints[index] = {
+        placeName: "mekin",
+        longitude: lngLat.lng,
+        latitude: lngLat.lat,
+      };
+      setWaypoints(updatedWaypoints);
+
+      // Update the route with new waypoints
+      const source = map.getSource(name);
+      if (source) {
+        source.setData({
+          type: "Feature",
+          geometry: {
+            type: "LineString",
+            coordinates: waypoints.map((point) => [
+              point.longitude,
+              point.latitude,
+            ]),
+          },
+        });
+      }
+    });
+    // console.log(waypoints);
   });
 };
-
-// // Function to highlight the active step in the route
-// export const highlightRouteSegment = (map, step, routeLayerName) => {
-//   if (map) {
-//     // Check if the route layer exists
-//     if (map.getLayer(routeLayerName)) {
-//       // Update the route color to highlight the active step
-//       map.setPaintProperty(routeLayerName, "line-color", [
-//         "case",
-//         ["==", ["get", "id"], step.id], // Compare step id to route feature id
-//         "pink", // Highlight color for the active step
-//         "#008CBA", // Default color for the route
-//       ]);
-
-//       // Trigger repaint to reflect the changes
-//       map.triggerRepaint();
-//     }
-//   }
-// };

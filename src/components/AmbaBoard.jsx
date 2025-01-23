@@ -8,6 +8,7 @@ import {
   Map,
   Premium,
 } from "../pages";
+import MapComponent from "../pages/Demo";
 
 export const AmbaBoard = () => {
   const [active, setActive] = useState(0);
