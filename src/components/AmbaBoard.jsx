@@ -16,9 +16,9 @@ export const AmbaBoard = () => {
   return (
     <div className=" w-full h-screen bg-white flex ">
       <div
-        className={` ${
+        className={`fixed z-20 top-0 ${
           open ? "w-[300px] " : "w-[118px] "
-        } ml-[19px] my-[12px] h-[99%] `}
+        } ml-[19px] my-[12px] h-[100%] `}
       >
         <Sidebar
           active={active}

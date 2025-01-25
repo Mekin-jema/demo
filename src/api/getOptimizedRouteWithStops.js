@@ -16,7 +16,7 @@ export const getOptimizedRouteWithStops = async (waypoints) => {
       })
       .join(";"); // Join waypoints into a single string
     console.log(locations);
-    const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${locations}?overview=full&geometries=geojson&steps=true`;
+    const osrmUrl = `https://router.project-osrm.org/trip/v1/driving/${locations}?source=first&overview=full&geometries=geojson&steps=true`;
 
     // Log the URL for debugging (optional, remove in production)
     console.log("Fetching route from OSRM:", osrmUrl);
@@ -31,6 +31,7 @@ export const getOptimizedRouteWithStops = async (waypoints) => {
 
     // Parse and return the JSON response
     const data = await response.json();
+    console.log(data);
     return data;
   } catch (error) {
     console.error("Error while fetching the optimized route:", error);

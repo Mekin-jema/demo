@@ -76,54 +76,57 @@ export const renderDirectionDetail = (
   };
 
   return (
-    <>
-      <div className="summary-info">
-        <div className="distance">
-          <p>Distance</p>
-          <p>{((route?.distance || 0) / 1000)?.toFixed(2)} km</p>
+    <div className="z-20 absolute top-[150px] left-[20px]">
+      <div className=" flex justify-between gap-4 my-4">
+        <div className="bg-[#215a44] text-white text-center rounded-lg p-2 w-full">
+          <p className="text-sm font-semibold">Distance</p>
+          <p className="text-lg font-bold">
+            {((route?.distance || 0) / 1000)?.toFixed(2)} km
+          </p>
         </div>
-        <div className="duration">
-          <p>Duration</p>
-          <p>{((route?.duration || 0) / 60)?.toFixed(2)} min</p>
+        <div className="bg-[#215a44] text-white text-center rounded-lg p-2 w-full">
+          <p className="text-sm font-semibold">Duration</p>
+          <p className="text-lg font-bold">
+            {((route?.duration || 0) / 60)?.toFixed(2)} min
+          </p>
         </div>
       </div>
       {steps?.length && (
-        <div className="step-list">
+        <div className="divide-y divide-gray-200">
           {/* Origin Step */}
-          <div className="item">
-            <div className="step-name">
+          <div className="py-4 text-gray-600 hover:cursor-pointer">
+            <div className="flex items-center gap-2 mb-1">
               <img width={24} alt="Step icon" src={OriginStep} />
-              <span>{steps[0]?.name}</span>
+              <span className="text-gray-900">{steps[0]?.name}</span>
             </div>
             <span>{steps[0]?.distance} m</span>
           </div>
 
           {/* Intermediate Steps */}
           {steps?.map((step, idx) => {
-            if (idx === 0 || idx === steps.length - 1) return null; // Skip origin and destination
+            if (idx === 0 || idx === steps.length - 1) return null;
 
             return (
               <div
-                className="item"
-                onClick={() => handleStepClick(step)} // Highlight and read aloud step
-                key={idx}
-                style={{
-                  backgroundColor: waypoints.some(
+                className={`py-4 hover:cursor-pointer ${
+                  waypoints.some(
                     (wp) =>
                       wp.latitude === step.maneuver.location[1] &&
                       wp.longitude === step.maneuver.location[0]
                   )
-                    ? "lightblue"
-                    : "",
-                }}
+                    ? "bg-blue-100"
+                    : ""
+                }`}
+                onClick={() => handleStepClick(step)}
+                key={idx}
               >
-                <div className="step-name">
+                <div className="flex items-center gap-2 mb-1">
                   <img
                     width={24}
                     alt="Step icon"
                     src={DIRECTION_ARROWS[step.maneuver.modifier]}
                   />
-                  <span>{step.name}</span>
+                  <span className="text-gray-900">{step.name}</span>
                 </div>
                 <span>{step.distance} m</span>
               </div>
@@ -131,14 +134,16 @@ export const renderDirectionDetail = (
           })}
 
           {/* Destination Step */}
-          <div className="item">
-            <div className="step-name">
+          <div className="py-4 text-gray-600 hover:cursor-pointer">
+            <div className="flex items-center gap-2 mb-1">
               <img width={24} alt="Step icon" src={DestinationStep} />
-              <span>{steps[steps?.length - 1]?.name}</span>
+              <span className="text-gray-900">
+                {steps[steps?.length - 1]?.name}
+              </span>
             </div>
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };

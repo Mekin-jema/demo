@@ -1,4 +1,3 @@
-// Pmtiles protocols
 import { PMTiles, Protocol } from "pmtiles";
 
 import { styles } from "../utils/styles";
@@ -50,7 +49,7 @@ const Map = () => {
   const [map, setMap] = useState(null);
   const [route, setRoute] = useState(null);
   const [toggle, setToggle] = useState(true);
-  const [close, setClose] = useState(false);
+
   const [pois, setPois] = useState([]);
   const [activeCategory, setActiveCategory] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -124,12 +123,12 @@ const Map = () => {
         // Add navigation controls (zoom in/out)
         mapInstance.current.addControl(
           new maplibregl.NavigationControl(),
-          "bottom-left"
+          "bottom-right"
         );
         // Add fullscreen control
         mapInstance.current.addControl(
           new maplibregl.FullscreenControl(),
-          "bottom-left"
+          "bottom-right"
         );
         // Add satellite view switcher button
         const layerSwitcher = document.createElement("div");
@@ -147,7 +146,7 @@ const Map = () => {
         layerSwitcher.appendChild(satelliteButton);
         mapInstance.current.addControl(
           { onAdd: () => layerSwitcher, onRemove: () => {} },
-          "bottom-left"
+          "bottom-right"
         );
         // Add marker at Addis Ababa
         const marker = new maplibregl.Marker({
@@ -159,35 +158,25 @@ const Map = () => {
         // Listen for the "styleimagemissing" event
 
         // Listen for the "styleimagemissing" event to handle missing icons
-        // mapInstance.current.on("styleimagemissing", (e) => {
-        //   console.log(e);
-        //   const missingImageId = e.id;
-        //   const category = categories.find(
-        //     (cat) => cat.icon === missingImageId
-        //   );
+        mapInstance.current.on("styleimagemissing", (e) => {
+          console.log(e);
+          const missingImageId = e.id;
+          const category = categories.find(
+            (cat) => cat.icon === missingImageId
+          );
 
-        //   // If category found and image is not already added
-        //   if (category && !mapInstance.current.hasImage(missingImageId)) {
-        //     const img = new Image();
-        //     img.src = category.iconUrl;
-        //     img.onload = () => {
-        //       // Add the image to the map once it's loaded
-        //       mapInstance.current.addImage(missingImageId, img);
-        //     };
-        //   }
-        // });
+          // If category found and image is not already added
+          if (category && !mapInstance.current.hasImage(missingImageId)) {
+            const img = new Image();
+            img.src = category.iconUrl;
+            img.onload = () => {
+              // Add the image to the map once it's loaded
+              mapInstance.current.addImage(missingImageId, img);
+            };
+          }
+        });
 
         // // Load icons for POIs
-        categories.forEach((category) => {
-          // Check if the icon is already in the map
-
-          const img = new Image();
-          img.src = category.iconUrl;
-          img.onload = () => {
-            // Add the image to the map once it's loaded
-            mapInstance.current.addImage(category.icon, img);
-          };
-        });
 
         function onDragEnd() {
           const lngLat = marker.getLngLat();
@@ -213,7 +202,7 @@ const Map = () => {
             trackUserLocation: true,
             showUserHeading: true,
           }),
-          "bottom-left"
+          "bottom-right"
         );
         setMap(mapInstance.current);
       })
@@ -414,59 +403,39 @@ const Map = () => {
 
   return (
     <div className="relative w-full h-full flex flex-col">
-      <div className="absolute top-0 right-0 p-2 mr-[300px] border-b border-gray-300 bg-transparent z-10 flex">
-        {categories.map((category) => (
-          <button
-            key={category.name}
-            onClick={() => handleCategoryClick(category)}
-            className={`flex items-center mx-1 px-3 py-2 rounded border space-x-2 ${
-              activeCategory === category.name
-                ? "bg-gray-600 text-white"
-                : "bg-white text-black"
-            }`}
-            disabled={loading}
-          >
-            <span>{category.icons}</span>
-            <span>{category.name}</span>
-          </button>
-        ))}
-      </div>
-
-      <ToastContainer position="top-center" autoClose={10000} />
-      {!close && renderAddressBox(waypoints, updateWaypoint, addWaypoint)}
-      <div ref={mapContainer} className="w-full h-full flex-1" />
-      <div className="relative">
-        {toggle ? (
-          <div className="fixed direction-detail">
-            <div className="w-full p-4">
-              <button
-                onClick={() => setToggle(false)}
-                className="absolute top-6 left-1 bg-green-800 text-white p-3 z-40 rounded-md"
-                aria-label="Close details"
-              >
-                <i className="pi pi-chevron-right cursor-pointer text-white"></i>
-              </button>
-              <img className="w-full h-[200px]" alt="Logo" src={Logo} />
-              {renderDirectionDetail(
-                route,
-                OriginStep,
-                DIRECTION_ARROWS,
-                DestinationStep,
-                map,
-                waypoints,
-                maplibregl
-              )}
-            </div>
-          </div>
-        ) : (
-          <button
-            onClick={() => setToggle(true)}
-            className="bg-green-800 rounded-sm text-white p-3 z-40 fixed top-6 right-0"
-            aria-label="Open details"
-          >
-            <i className="pi pi-chevron-left cursor-pointer text-white"></i>
-          </button>
+      <div className=" w-[409px] h-full bg-red fixed  bg-white left-[120px] top-4 z-10 border-2 border-l-neutral-600 ">
+        {renderDirectionDetail(
+          route,
+          OriginStep,
+          DIRECTION_ARROWS,
+          DestinationStep,
+          map,
+          waypoints,
+          maplibregl
         )}
+      </div>
+      <div className="flex flex-col w-full h-full ">
+        <div className="absolute top-0 right-0 p-2 mr-[300px] border-b border-gray-300 bg-transparent z-10 flex">
+          {categories.map((category) => (
+            <button
+              key={category.name}
+              onClick={() => handleCategoryClick(category)}
+              className={`flex items-center mx-1 px-3 py-2 rounded border space-x-2 ${
+                activeCategory === category.name
+                  ? "bg-gray-600 text-white"
+                  : "bg-white text-black"
+              }`}
+              disabled={loading}
+            >
+              <span>{category.icons}</span>
+              <span>{category.name}</span>
+            </button>
+          ))}
+        </div>
+
+        <ToastContainer position="top-center" autoClose={10000} />
+        {renderAddressBox(waypoints, updateWaypoint, addWaypoint)}
+        <div ref={mapContainer} className="w-full h-full flex-1" />
       </div>
     </div>
   );

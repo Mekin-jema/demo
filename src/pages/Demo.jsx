@@ -56,6 +56,7 @@ const MapComponent = () => {
     mapInstance.on("styleimagemissing", (e) => {
       const missingImageId = e.id;
       const category = categories.find((cat) => cat.icon === missingImageId);
+      console.log("Missing image:", missingImageId, category);
       if (category && !mapInstance.hasImage(missingImageId)) {
         const img = new Image();
         img.src = category.iconUrl;
@@ -93,6 +94,7 @@ const MapComponent = () => {
     try {
       const response = await fetch(url);
       const data = await response.json();
+
       const pois = data.elements.map((element) => ({
         id: element.id,
         name: element.tags.name || "Unknown",

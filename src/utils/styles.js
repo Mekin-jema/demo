@@ -3282,7 +3282,7 @@ export const styles = {
   },
   glyphs:
     "https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key=u9EnL0tM9ZS24uoyFpL7",
-  sprite: "https://api.maptiler.com/maps/bright/sprite",
+  // sprite: "https://api.maptiler.com/maps/bright/sprite",
   bearing: 0,
   pitch: 0,
   center: [0, 2.8421709430404e-14],
