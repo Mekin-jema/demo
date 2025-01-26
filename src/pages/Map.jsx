@@ -41,7 +41,7 @@ import {
   FaGasPump,
 } from "react-icons/fa";
 
-const Map = () => {
+const Map = ({ setOpen }) => {
   // Refs for map container and instance
   const mapContainer = useRef(null);
   const mapInstance = useRef(null);
@@ -403,17 +403,6 @@ const Map = () => {
 
   return (
     <div className="relative w-full h-full flex flex-col">
-      <div className=" w-[409px] h-full bg-red fixed  bg-white left-[120px] top-4 z-10 border-2 border-l-neutral-600 ">
-        {renderDirectionDetail(
-          route,
-          OriginStep,
-          DIRECTION_ARROWS,
-          DestinationStep,
-          map,
-          waypoints,
-          maplibregl
-        )}
-      </div>
       <div className="flex flex-col w-full h-full ">
         <div className="absolute top-0 right-0 p-2 mr-[300px] border-b border-gray-300 bg-transparent z-10 flex">
           {categories.map((category) => (
@@ -434,9 +423,21 @@ const Map = () => {
         </div>
 
         <ToastContainer position="top-center" autoClose={10000} />
-        {renderAddressBox(waypoints, updateWaypoint, addWaypoint)}
-        <div ref={mapContainer} className="w-full h-full flex-1" />
+        <div ref={mapContainer} className="w-full h-full flex-1 " />
       </div>
+      {renderAddressBox(
+        waypoints,
+        updateWaypoint,
+        addWaypoint,
+        setOpen,
+        route,
+        OriginStep,
+        DIRECTION_ARROWS,
+        DestinationStep,
+        map,
+        waypoints,
+        maplibregl
+      )}
     </div>
   );
 };

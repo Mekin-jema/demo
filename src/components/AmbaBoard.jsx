@@ -8,11 +8,10 @@ import {
   Map,
   Premium,
 } from "../pages";
-import MapComponent from "../pages/Demo";
 
 export const AmbaBoard = () => {
   const [active, setActive] = useState(0);
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   return (
     <div className=" w-full h-screen bg-white flex ">
       <div
@@ -27,9 +26,9 @@ export const AmbaBoard = () => {
           setOpen={setOpen}
         />
       </div>
-      <div className={`flex-1 h-[90%]  m-0 h `}>
+      <div className={`flex-1 h-[90%] ml-[300px] `}>
         {active === 0 && <Board />}
-        {active === 1 && <Map />}
+        {active === 1 && <Map setOpen={setOpen} />}
 
         {active === 2 && <ApiClients />}
         {active === 3 && <AccountSettings />}

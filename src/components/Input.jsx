@@ -36,7 +36,7 @@ export default function AddressInput({ setAddress, placeholder, index }) {
   };
 
   return (
-    <div className="relative p-2 rounded-xl w-full shadow-lg">
+    <div className="relative p-2 rounded-sm w-[300px] ">
       {/* Map Icon */}
       {index === 0 ? (
         <Locate className="absolute left-2 top-1/2 transform -translate-y-1/2 text-[#770E9C] w-5 h-5" />
@@ -50,7 +50,7 @@ export default function AddressInput({ setAddress, placeholder, index }) {
         value={inputValue}
         onChange={handleChange}
         placeholder={placeholder}
-        className="w-full py-2 pl-8 pr-8 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-800"
+        className="w-full py-1 pl-8 pr-8 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-800"
       />
 
       {/* Clear Input Icon */}

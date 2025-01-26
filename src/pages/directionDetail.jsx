@@ -76,7 +76,7 @@ export const renderDirectionDetail = (
   };
 
   return (
-    <div className="z-20 absolute top-[150px] left-[20px]">
+    <div className="z-20 flex flex-col gap-4 p-4 bg-white rounded-lg shadow-md">
       <div className=" flex justify-between gap-4 my-4">
         <div className="bg-[#215a44] text-white text-center rounded-lg p-2 w-full">
           <p className="text-sm font-semibold">Distance</p>
