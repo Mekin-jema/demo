@@ -7,7 +7,7 @@ import "primeicons/primeicons.css";
 const SidebarItem = ({ icon, label, isActive, onClick, open }) => (
   <div
     className={`cursor-pointer flex items-center gap-4 px-5 py-3 rounded-lg transition-all duration-200 ${
-      isActive ? "bg-[#D19EDB]" : "hover:bg-[#D19EDB]"
+      isActive ? "bg-[#D19EDB]" : "hover:bg-[#e2b1ec]"
     } ${open ? "w-full h-[44px]" : "w-[64px] h-[44px]"}`}
     onClick={onClick}
   >

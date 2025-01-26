@@ -96,6 +96,7 @@ const Map = ({ setOpen }) => {
       iconUrl: "/icons/fuel.png",
     },
   ];
+
   useEffect(() => {
     if (mapInstance.current) return; // Prevent re-initialization if map already exists
 
@@ -130,6 +131,7 @@ const Map = ({ setOpen }) => {
           new maplibregl.FullscreenControl(),
           "bottom-right"
         );
+
         // Add satellite view switcher button
         const layerSwitcher = document.createElement("div");
         layerSwitcher.className = "maplibregl-ctrl maplibregl-ctrl-group";
@@ -159,7 +161,7 @@ const Map = ({ setOpen }) => {
 
         // Listen for the "styleimagemissing" event to handle missing icons
         mapInstance.current.on("styleimagemissing", (e) => {
-          console.log(e);
+          // console.log(e);
           const missingImageId = e.id;
           const category = categories.find(
             (cat) => cat.icon === missingImageId
@@ -244,34 +246,35 @@ const Map = ({ setOpen }) => {
             );
           }
 
-          // if (valhallaRoute?.trip?.legs?.length > 0) {
-          //   const routeGeometry = valhallaRoute.trip.legs.flatMap((leg) =>
-          //     decodePolyline(leg.shape)
-          //   );
-          //   addRouteLayer(
-          //     map,
-          //     "green",
-          //     routeGeometry,
-          //     "route2",
-          //     10,
-          //     setWaypoints,
-          //     waypoints
-          //   );
-          // }
-        } else {
-          const optimizeRoute = await getOptimizedRouteWithStops(waypoints);
-          if (optimizeRoute?.routes?.length > 0) {
+          if (valhallaRoute?.trip?.legs?.length > 0) {
+            const routeGeometry = valhallaRoute.trip.legs.flatMap((leg) =>
+              decodePolyline(leg.shape)
+            );
             addRouteLayer(
               map,
-              "#3498db",
-              optimizeRoute.routes[0].geometry.coordinates,
+              "green",
+              routeGeometry,
+              "route2",
+              10,
+              setWaypoints,
+              waypoints
+            );
+          }
+        } else {
+          const optimizeRoute = await getOptimizedRouteWithStops(waypoints);
+          console.log(optimizeRoute);
+          if (optimizeRoute?.trips?.length > 0) {
+            addRouteLayer(
+              map,
+              "#A91CD8",
+              optimizeRoute.trips[0].geometry.coordinates,
               "route3",
               10,
               // maplibregl,
               setWaypoints,
               waypoints
             );
-            setRoute(optimizeRoute.routes[0]);
+            setRoute(optimizeRoute.trips[0]);
           }
         }
       } catch (error) {

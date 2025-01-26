@@ -1,7 +1,21 @@
 import maplibregl from "maplibre-gl";
+
+let markers = []; // Array to store marker instances
+
+/**
+ * Adds a route layer with draggable markers for waypoints.
+ *
+ * @param {Object} map - Maplibre GL map instance.
+ * @param {string} color - Line color for the route.
+ * @param {Array} geometry - Array of [lng, lat] coordinates representing the route.
+ * @param {string} name - Unique name for the route layer.
+ * @param {number} thickness - Thickness of the route line.
+ * @param {Function} setWaypoints - Function to update the waypoints state.
+ * @param {Array} waypoints - Array of waypoints with { placeName, longitude, latitude }.
+ */
 export const addRouteLayer = (
   map,
-  color = "red",
+  color,
   geometry,
   name,
   thickness,
@@ -38,28 +52,30 @@ export const addRouteLayer = (
     },
   });
 
-  // Add markers for start and end points of the route
-  const markersData = [
-    { color: "green", coordinates: geometry[0] }, // Start point
-    { color: "red", coordinates: geometry[geometry.length - 1] }, // End point
-  ];
+  // Clear existing markers
+  markers.forEach((marker) => marker.remove());
+  markers = []; // Reset markers array
 
-  markersData.forEach((markerData, index) => {
+  // Add draggable markers for each waypoint
+  waypoints.forEach((waypoint, index) => {
+    const isStart = index === 0;
+    const isEnd = index === waypoints.length - 1;
+
     const marker = new maplibregl.Marker({
-      color: markerData.color,
+      color: isStart ? "green" : isEnd ? "red" : "#0074D9", // Start: Green, End: Red, Others: Blue
       draggable: true,
     })
-      .setLngLat(markerData.coordinates)
+      .setLngLat([waypoint.longitude, waypoint.latitude])
       .addTo(map);
 
-    // Handle dragging marker and updating route
+    markers.push(marker); // Store the marker instance
+
+    // Handle marker dragging
     marker.on("dragend", () => {
       const lngLat = marker.getLngLat();
-      // console.log(lngLat);
-      // console.log(index);
       const updatedWaypoints = [...waypoints];
       updatedWaypoints[index] = {
-        placeName: "mekin",
+        placeName: waypoint.placeName, // Keep the original name
         longitude: lngLat.lng,
         latitude: lngLat.lat,
       };
@@ -72,7 +88,7 @@ export const addRouteLayer = (
           type: "Feature",
           geometry: {
             type: "LineString",
-            coordinates: waypoints.map((point) => [
+            coordinates: updatedWaypoints.map((point) => [
               point.longitude,
               point.latitude,
             ]),
@@ -80,6 +96,5 @@ export const addRouteLayer = (
         });
       }
     });
-    // console.log(waypoints);
   });
 };

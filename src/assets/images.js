@@ -6,11 +6,12 @@ import Sidebar from "./Sidebar/sidebar.svg";
 import sliders from "./Sidebar/sliders.svg";
 import unlock from "./Sidebar/unlock.svg";
 import logo from "./logo-main.png";
-import logo1 from "./logo1.png";
+
+import logoSmall from "../assets/geocoding/Group.png";
 
 const images = {
   logo,
-  logo1,
+  logo1: logoSmall,
 
   download: download,
   gift: gift,

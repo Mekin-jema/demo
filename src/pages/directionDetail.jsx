@@ -1,6 +1,7 @@
 // Import necessary utilities
 // import { highlightRouteSegment } from "./MapUtils";
 import "../styles/pop.css";
+import maplibregl from "maplibre-gl";
 
 // Text-to-Speech Initialization
 const synth = window.speechSynthesis;
@@ -31,8 +32,8 @@ export const renderDirectionDetail = (
   DIRECTION_ARROWS,
   DestinationStep,
   map,
-  waypoints,
-  maplibregl
+  waypoints
+  // maplibregl
 ) => {
   const steps = route?.legs[0]?.steps || [];
 
@@ -92,7 +93,7 @@ export const renderDirectionDetail = (
         </div>
       </div>
       {steps?.length && (
-        <div className="divide-y divide-gray-200">
+        <div className="divide-y divide-gray-200 max-h-[300px] overflow-y-auto">
           {/* Origin Step */}
           <div className="py-4 text-gray-600 hover:cursor-pointer">
             <div className="flex items-center gap-2 mb-1">
