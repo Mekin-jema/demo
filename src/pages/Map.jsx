@@ -10,14 +10,6 @@ import { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css"; // MapLibre core styles
 
-// Import assets
-import OriginStep from "../assets/images/origin_step.svg"; // Image for the origin step indicator
-import DestinationStep from "../assets/images/destination_step.svg"; // Image for the destination step indicator
-import Logo from "../assets/logo2.png"; // Application logo
-
-// Import constants
-import { DIRECTION_ARROWS } from "../constants"; // Arrow constants for directions
-
 // Import API functions
 import { getRouteInfo } from "../api/getRouteInfo"; // Function to fetch route information
 import { getShortestRoute } from "../api/getShortestRoute"; // Function to fetch the shortest route
@@ -26,76 +18,31 @@ import { getOptimizedRouteWithStops } from "../api/getOptimizedRouteWithStops";
 
 // Import utility functions
 import decodePolyline from "../utils/decoder"; // Utility for decoding polylines
-import { renderDirectionDetail } from "./directionDetail"; // Utility for rendering detailed directions
-import { renderAddressBox } from "./inputHandler"; // Utility for rendering address input fields
+import RenderDirectionDetail from "./inputHandler"; // Utility for rendering address input fields
 import { addRouteLayer } from "../utils/MapUtils"; // Utility for adding route layers to the map
 // for toastin purpouse
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 //
-import {
-  FaUtensils,
-  FaHotel,
-  FaShoppingCart,
-  FaTree,
-  FaGasPump,
-} from "react-icons/fa";
 
-const Map = ({ setOpen }) => {
+import { useSelector, useDispatch } from "react-redux";
+import { setWaypoints } from "../Redux/MapSlice";
+import categories from "../utils/category";
+
+const Map = () => {
   // Refs for map container and instance
+  const [route, setRoute] = useState(null);
+  const [map, setMap] = useState(null);
   const mapContainer = useRef(null);
   const mapInstance = useRef(null);
-  const [mapCenter, setMapCenter] = useState([]);
-  const [map, setMap] = useState(null);
-  const [route, setRoute] = useState(null);
-  const [toggle, setToggle] = useState(true);
 
   const [pois, setPois] = useState([]);
   const [activeCategory, setActiveCategory] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const [waypoints, setWaypoints] = useState([
-    { placeName: "", longitude: null, latitude: null },
-    { placeName: "", longitude: null, latitude: null },
-  ]);
-  // console.log(waypoints);
-  const categories = [
-    {
-      name: "Restaurants",
-      tag: "amenity=restaurant",
-      icons: <FaUtensils />,
-      icon: "restaurant",
-      iconUrl: "/icons/restaurant.png",
-    },
-    {
-      name: "Hotels",
-      tag: "tourism=hotel",
-      icons: <FaHotel />,
-      icon: "hotel",
-      iconUrl: "/icons/hotel.png",
-    },
-    {
-      name: "Grocery Stores",
-      tag: "shop=supermarket",
-      icons: <FaShoppingCart />,
-      icon: "supermarket",
-      iconUrl: "/icons/supermarket.png",
-    },
-    {
-      name: "Parks",
-      tag: "leisure=park",
-      icons: <FaTree />,
-      icon: "park",
-      iconUrl: "/icons/park.png",
-    },
-    {
-      name: "Fuel Stations",
-      tag: "amenity=fuel",
-      icons: <FaGasPump />,
-      icon: "fuel",
-      iconUrl: "/icons/fuel.png",
-    },
-  ];
+  const dispatch = useDispatch();
+
+  const { waypoints } = useSelector((state) => state.map);
 
   useEffect(() => {
     if (mapInstance.current) return; // Prevent re-initialization if map already exists
@@ -219,6 +166,7 @@ const Map = ({ setOpen }) => {
     if (!map || !waypoints[0].latitude || !waypoints[1].longitude) return;
 
     const fetchRoutes = async () => {
+      console.log("waypoints", waypoints);
       const coordinates = waypoints.slice(0, 2);
 
       try {
@@ -228,21 +176,24 @@ const Map = ({ setOpen }) => {
             getShortestRoute(coordinates),
             getDefaultRoute(coordinates),
           ]);
+          console.log(routeInfo, shortestRoute, valhallaRoute);
 
           if (routeInfo?.routes?.length > 0) {
+            // console.log(routeInfo.routes[0]);
             setRoute(routeInfo.routes[0]);
           }
 
           if (shortestRoute?.routes?.length > 0) {
             addRouteLayer(
               map,
-              "red",
+              "blue",
               shortestRoute.routes[0].geometry.coordinates,
               "route1",
               10,
+
               setWaypoints,
-              waypoints
-              // maplibregl
+              waypoints,
+              dispatch
             );
           }
 
@@ -256,13 +207,16 @@ const Map = ({ setOpen }) => {
               routeGeometry,
               "route2",
               10,
+
               setWaypoints,
-              waypoints
+              waypoints,
+              dispatch
             );
           }
         } else {
           const optimizeRoute = await getOptimizedRouteWithStops(waypoints);
-          console.log(optimizeRoute);
+          // console.log(optimizeRoute);
+          console.log(map);
           if (optimizeRoute?.trips?.length > 0) {
             addRouteLayer(
               map,
@@ -270,20 +224,21 @@ const Map = ({ setOpen }) => {
               optimizeRoute.trips[0].geometry.coordinates,
               "route3",
               10,
-              // maplibregl,
+
               setWaypoints,
-              waypoints
+              waypoints,
+              dispatch
             );
             setRoute(optimizeRoute.trips[0]);
           }
         }
       } catch (error) {
-        console.error("Error fetching routes:", error);
+        console.error("Error fetching routes:", error.message);
       }
     };
 
     fetchRoutes();
-  }, [map, waypoints]);
+  }, [map, waypoints, dispatch]);
 
   useEffect(() => {
     if (!map || pois.length === 0) return;
@@ -329,34 +284,6 @@ const Map = ({ setOpen }) => {
       },
     });
   }, [pois, map]);
-
-  const addWaypoint = () => {
-    const lastWaypoint = waypoints[waypoints.length - 1];
-    if (
-      !lastWaypoint.placeName ||
-      lastWaypoint.longitude === null ||
-      lastWaypoint.latitude === null
-    ) {
-      toast.error(
-        "Please complete the previous waypoint before adding a new one.",
-        {
-          position: "top-center",
-          autoClose: 3000,
-        }
-      );
-      return;
-    }
-    setWaypoints([
-      ...waypoints,
-      { placeName: "", longitude: null, latitude: null },
-    ]);
-  };
-
-  const updateWaypoint = (index, address) => {
-    const updatedWaypoints = [...waypoints];
-    updatedWaypoints[index] = address;
-    setWaypoints(updatedWaypoints);
-  };
 
   const fetchPOIs = async (categoryTag, center, icon) => {
     setLoading(true);
@@ -419,7 +346,7 @@ const Map = ({ setOpen }) => {
               }`}
               disabled={loading}
             >
-              <span>{category.icons}</span>
+              <span>{<category.IconComponent />}</span>
               <span>{category.name}</span>
             </button>
           ))}
@@ -428,19 +355,9 @@ const Map = ({ setOpen }) => {
         <ToastContainer position="top-center" autoClose={10000} />
         <div ref={mapContainer} className="w-full h-full flex-1 " />
       </div>
-      {renderAddressBox(
-        waypoints,
-        updateWaypoint,
-        addWaypoint,
-        setOpen,
-        route,
-        OriginStep,
-        DIRECTION_ARROWS,
-        DestinationStep,
-        map,
-        waypoints,
-        maplibregl
-      )}
+      <div>
+        <RenderDirectionDetail route={route} />
+      </div>
     </div>
   );
 };

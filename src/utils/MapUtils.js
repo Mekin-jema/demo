@@ -1,4 +1,5 @@
 import maplibregl from "maplibre-gl";
+import getPlaceNameFromCoordinates from "../api/getPlaceFromCoordinates";
 
 let markers = []; // Array to store marker instances
 
@@ -12,7 +13,15 @@ let markers = []; // Array to store marker instances
  * @param {number} thickness - Thickness of the route line.
  * @param {Function} setWaypoints - Function to update the waypoints state.
  * @param {Array} waypoints - Array of waypoints with { placeName, longitude, latitude }.
+ *
+ *
  */
+let data = "";
+
+const getLocation = async (lngLat) => {
+  data = await getPlaceNameFromCoordinates(lngLat);
+};
+
 export const addRouteLayer = (
   map,
   color,
@@ -20,7 +29,8 @@ export const addRouteLayer = (
   name,
   thickness,
   setWaypoints,
-  waypoints
+  waypoints,
+  dispatch
 ) => {
   // Remove existing route layer if present
   if (map.getLayer(name)) map.removeLayer(name);
@@ -71,15 +81,19 @@ export const addRouteLayer = (
     markers.push(marker); // Store the marker instance
 
     // Handle marker dragging
+
     marker.on("dragend", () => {
       const lngLat = marker.getLngLat();
       const updatedWaypoints = [...waypoints];
+      getLocation(lngLat);
+      console.log(data);
+
       updatedWaypoints[index] = {
-        placeName: waypoint.placeName, // Keep the original name
+        placeName: data || `${(lngLat.lng, lngLat.lat)}`, // Keep the original name
         longitude: lngLat.lng,
         latitude: lngLat.lat,
       };
-      setWaypoints(updatedWaypoints);
+      dispatch(setWaypoints(updatedWaypoints));
 
       // Update the route with new waypoints
       const source = map.getSource(name);
